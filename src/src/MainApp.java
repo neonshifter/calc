@@ -1,52 +1,58 @@
+import java.io.IOException;
 import java.util.Scanner;
 
-
-public class MainApp {
+class MainApp {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Введите арифметическое выражение: ");
+        String input = scanner.nextLine();
+        try {
+            String result = calc(input);
+            System.out.println("Результат: " + result);
+        } catch (IOException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+    }
 
-        int n = getInput(sc, "Enter first number (1-10)");
-        int m = getInput(sc, "Enter second number (1-10)");
+    static String calc(String input) throws IOException {
+        String[] tokens = input.split(" ");
+        if (tokens.length != 3) {
+            throw new IOException("т.к. строка не является математической операцией");
+        }
 
-        System.out.println("Enter operation (+, -, *, /)");
-        char operation = sc.next().charAt(0);
+        int a, b;
+        try {
+            a = Integer.parseInt(tokens[0]);
+            b = Integer.parseInt(tokens[2]);
+            if (a<1 || a>10 || b<1 || b>10) {
+                throw new IOException("Калькулятор должен принимать на вход числа от 1 до 10 включительно");
+            }
 
-        switch (operation) {
-            case '+':
-                System.out.println(n + m);
+        } catch (NumberFormatException e) {
+            throw new IOException("Неверный формат чисел");
+        }
+
+        int result;
+        switch (tokens[1]) {
+            case "+":
+                result = a + b;
                 break;
-            case '-':
-                System.out.println(n - m);
+            case "-":
+                result = a - b;
                 break;
-            case '*':
-                System.out.println(n * m);
+            case "*":
+                result = a * b;
                 break;
-            case '/':
-                if (m != 0) {
-                    System.out.println(n / m);
-                } else {
-                    System.out.println("Division by zero");
+            case "/":
+                if (b == 0) {
+                    throw new IOException("Деление на ноль");
                 }
+                result = a / b;
                 break;
             default:
-                System.out.println("Invalid operation");
-                break;
+                throw new IOException("Неверная операция");
         }
 
-        sc.close();
-    }
-
-    private static int getInput(Scanner sc, String prompt) {
-        int number;
-        while (true) {
-            System.out.println(prompt);
-            number = sc.nextInt();
-            if (number >= 1 && number <= 10) {
-                return number;
-            } else {
-                System.out.println("Number should be between 1 and 10");
-            }
-        }
+        return String.valueOf(result);
     }
 }
-
